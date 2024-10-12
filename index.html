@@ -1,40 +1,64 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-    </style>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
-<body>
-    <a-scene embedded arjs="sourceType: webcam;">
-        <a-marker preset="hiro">
-            <a-entity geometry="primitive: box;" material="color: red;" position="0 0.5 0"></a-entity>
-        </a-marker>
-        <a-entity camera></a-entity>
-    </a-scene>
-    
-    <script>
-        let destination = { lat: 12.991882, lng: 80.230954 }; // Your destination coordinates
-        let userMarker; // Entity for user's position
 
-        navigator.geolocation.watchPosition((position) => {
-            let userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
+<body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-assets>
+            <a-asset-item id="animated-asset" src="assets/asset.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-entity
+            look-at="[gps-camera]"
+            animation-mixer="loop: repeat"
+            gltf-model="#animated-asset"
+            scale="0.5 0.5 0.5"
+            gps-entity-place="latitude: 12.991882; longitude: 80.230954;"
+            id="destination-entity"
+        ></a-entity>
+
+        <a-camera gps-camera rotation-reader></a-camera>
+        
+        <a-entity id="line" line></a-entity>
+    </a-scene>
+
+    <script>
+        // Function to create a line
+        function createLine(start, end) {
+            const geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(start[0], start[1], start[2]));
+            geometry.vertices.push(new THREE.Vector3(end[0], end[1], end[2]));
             
-            // Update user marker position
-            if (!userMarker) {
-                userMarker = document.createElement('a-entity');
-                userMarker.setAttribute('geometry', 'primitive: box');
-                userMarker.setAttribute('material', 'color: blue');
-                document.querySelector('a-scene').appendChild(userMarker);
+            const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+            const line = new THREE.Line(geometry, material);
+            return line;
+        }
+
+        // Listen for GPS updates
+        const lineEntity = document.getElementById('line');
+        navigator.geolocation.watchPosition(function(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+
+            // Convert GPS coordinates to A-Frame coordinates (this is a simplification)
+            const userPosition = [userLon, 0, userLat]; // Adjust as necessary
+            const destinationPosition = [80.230954, 0, 12.991882]; // Destination coordinates
+            
+            // Remove existing line if present
+            while (lineEntity.object3D.children.length > 0) {
+                lineEntity.object3D.remove(lineEntity.object3D.children[0]);
             }
-            userMarker.setAttribute('gps-entity-place', `latitude: ${userLocation.lat}; longitude: ${userLocation.lng};`);
+
+            // Create and add the new line
+            const line = createLine(userPosition, destinationPosition);
+            lineEntity.object3D.add(line);
         });
     </script>
 </body>
