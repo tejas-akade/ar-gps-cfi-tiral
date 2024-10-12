@@ -39,13 +39,21 @@
             ></a-asset-item>
         </a-assets>
 
+        <!-- Continuous asset in the center of the screen -->
+        <a-entity
+            gltf-model="#animated-asset"
+            scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
+            position="0 0 -2" <!-- Adjust position if needed -->
+        ></a-entity>
+
+        <!-- Entities at specific GPS coordinates -->
         <a-entity
             look-at="[gps-camera]"
             animation-mixer="loop: repeat"
             gltf-model="#animated-asset"
             scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
             gps-entity-place="latitude: 12.991882; longitude: 80.230954;"
-            draw-line="end: 12.991882 80.230954 0;" <!-- Example end point -->
+            draw-line="end: 12.991882 80.230954 0;"
         ></a-entity>
         <a-entity
             look-at="[gps-camera]"
@@ -53,7 +61,7 @@
             gltf-model="#animated-asset"
             scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
             gps-entity-place="latitude: 12.991741221512893; longitude: 80.23098000884602;"
-            draw-line="end: 12.991741221512893 80.23098000884602 0;" <!-- Example end point -->
+            draw-line="end: 12.991741221512893 80.23098000884602 0;"
         ></a-entity>
         <a-entity
             look-at="[gps-camera]"
@@ -61,7 +69,7 @@
             gltf-model="#animated-asset"
             scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
             gps-entity-place="latitude: 12.991600089712554; longitude: 80.23099610210012;"
-            draw-line="end: 12.991600089712554 80.23099610210012 0;" <!-- Example end point -->
+            draw-line="end: 12.991600089712554 80.23099610210012 0;"
         ></a-entity>
 
         <a-camera gps-camera rotation-reader></a-camera>
