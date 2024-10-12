@@ -1,58 +1,41 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-        <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <a-scene embedded arjs="sourceType: webcam;">
+        <a-marker preset="hiro">
+            <a-entity geometry="primitive: box;" material="color: red;" position="0 0.5 0"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+    
+    <script>
+        let destination = { lat: 12.991882, lng: 80.230954 }; // Your destination coordinates
+        let userMarker; // Entity for user's position
 
-        <!-- Custom degToRad function -->
-        <script>
-            function degToRad(degrees) {
-                return degrees * (Math.PI / 180);
+        navigator.geolocation.watchPosition((position) => {
+            let userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            
+            // Update user marker position
+            if (!userMarker) {
+                userMarker = document.createElement('a-entity');
+                userMarker.setAttribute('geometry', 'primitive: box');
+                userMarker.setAttribute('material', 'color: blue');
+                document.querySelector('a-scene').appendChild(userMarker);
             }
-        </script>
-    </head>
-
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            renderer="logarithmicDepthBuffer: true;"
-            embedded
-            loading-screen="enabled: false;"
-            arjs="sourceType: webcam; debugUIEnabled: false;"
-        >
-            <a-assets>
-                <a-asset-item
-                    id="animated-asset"
-                    src="assets/asset.gltf"
-                ></a-asset-item>
-            </a-assets>
-
-                <a-entity
-                    look-at="[gps-camera]"
-                    animation-mixer="loop: repeat"
-                    gltf-model="#animated-asset"
-                    scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
-                    gps-entity-place="latitude: 12.991882; longitude: 80.230954;"
-                ></a-entity>
-                <a-entity
-                    look-at="[gps-camera]"
-                    animation-mixer="loop: repeat"
-                    gltf-model="#animated-asset"
-                    scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
-                    gps-entity-place="latitude: 12.991741221512893; longitude: 80.23098000884602;"
-                ></a-entity>
-                <a-entity
-                    look-at="[gps-camera]"
-                    animation-mixer="loop: repeat"
-                    gltf-model="#animated-asset"
-                    scale="0.49795080132744113 0.49795080132744113 0.49795080132744113"
-                    gps-entity-place="latitude: 12.991600089712554; longitude: 80.23099610210012;"
-                ></a-entity>
-
-            <a-camera gps-camera rotation-reader></a-camera>
-        </a-scene>
-    </body>
+            userMarker.setAttribute('gps-entity-place', `latitude: ${userLocation.lat}; longitude: ${userLocation.lng};`);
+        });
+    </script>
+</body>
 </html>
